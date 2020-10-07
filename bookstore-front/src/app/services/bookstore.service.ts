@@ -4,6 +4,7 @@ import { BOOKS_API_URL } from '../app-injection-tokens';
 import { MsalService } from '@azure/msal-angular';
 import { Observable } from 'rxjs';
 import { Book } from '../models/book';
+import { Order } from '../models/order';
 
 @Injectable({
   providedIn: 'root'
@@ -23,17 +24,7 @@ export class BookstoreService {
     return this.http.get<Book[]>(`${this.baseApiUrl}books`);
   }
 
-  getOrders(): Observable<Book[]> {
-    this.httpOptions = {
-      headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.authService.getCurrentConfiguration()
-      })
-
-  };
-    return this.http.get<Book[]>(`${this.baseApiUrl}orders`,this.httpOptions)
-      .pipe((response: any) => {
-        return response;
-      });;
+  getOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.baseApiUrl}orders`);
   }
 }

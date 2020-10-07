@@ -18,51 +18,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import {
   MsalModule,
   MsalInterceptor,
-  MSAL_CONFIG,
-  MSAL_CONFIG_ANGULAR,
   MsalService,
-  MsalAngularConfiguration
 } from '@azure/msal-angular';
-import { Configuration } from 'msal';
-
-export const protectedResourceMap: [string, string[]][] = [
-  ['https://graph.microsoft.com/v1.0/me', ['user.read']]
-];
+import { Logger, LogLevel } from 'msal';
 
 const isIE = window.navigator.userAgent.indexOf("MSIE ") > -1 || window.navigator.userAgent.indexOf("Trident/") > -1;
 
-function MSALConfigFactory(): Configuration {
-  return {
-    auth: {
-      clientId: environment.uiClienId,
-      authority: environment.authority,
-      validateAuthority: true,
-      redirectUri: environment.redirectUrl,
-      postLogoutRedirectUri: environment.redirectUrl,
-      navigateToLoginRequestUrl: true,
-    },
-    cache: {
-      cacheLocation: "localStorage",
-      storeAuthStateInCookie: isIE, // set to true for IE 11
-    },
-  };
+export function loggerCallback(logLevel, message, piiEnabled) {
+  console.log(message);
 }
-
-function MSALAngularConfigFactory(): MsalAngularConfiguration {
-  return {
-    popUp: !isIE,
-    consentScopes: [
-      "user.read",
-      "openid",
-      "profile",
-      environment.scopeUri
-    ],
-    unprotectedResources: ["https://www.microsoft.com/en-us/"],
-    protectedResourceMap,
-    extraQueryParameters: {}
-  };
-}
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -80,22 +44,48 @@ function MSALAngularConfigFactory(): MsalAngularConfiguration {
     MatButtonModule,
     MatTableModule,
     MatFormFieldModule,
-    MsalModule
-  ],
+    MsalModule,
+    MsalModule.forRoot({
+      auth: {
+          clientId: environment.uiClienId,
+          authority: 'https://login.microsoftonline.com/' + environment.tenantId,
+          redirectUri: environment.redirectUrl,
+          postLogoutRedirectUri: environment.redirectUrl,
+          validateAuthority: true,
+          navigateToLoginRequestUrl: true
+      },
+      system: {
+        logger: new Logger(loggerCallback, {
+            correlationId: '1234',
+            level: LogLevel.Verbose,
+            piiLoggingEnabled: true,
+        }),
+    },
+      cache: {
+        cacheLocation: 'sessionStorage',
+        storeAuthStateInCookie: isIE
+      },
+    },
+    {
+      popUp: isIE,
+      consentScopes: [
+        'user.read',
+        'openid',
+        'profile',
+        environment.scopeUri
+      ],
+      protectedResourceMap: [
+        ['https://graph.microsoft.com/v1.0/me', ['user.read']],
+        ['http://localhost:5000/orders', [environment.scopeUri]]
+      ]
+    })
+    ],
   providers: [
     HttpClient,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
       multi: true
-    },
-    {
-      provide: MSAL_CONFIG,
-      useFactory: MSALConfigFactory
-    },
-    {
-      provide: MSAL_CONFIG_ANGULAR,
-      useFactory: MSALAngularConfigFactory
     },
     {
       provide: BOOKS_API_URL,

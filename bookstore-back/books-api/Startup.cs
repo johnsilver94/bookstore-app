@@ -39,6 +39,7 @@ namespace books_api
             }));
 
             services.AddSingleton(new BookStore());
+            services.AddSingleton(new OrdersStore());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

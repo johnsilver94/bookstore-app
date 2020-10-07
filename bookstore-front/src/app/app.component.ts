@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BroadcastService, MsalService } from '@azure/msal-angular';
 import { Logger, CryptoUtils } from 'msal';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ export class AppComponent implements OnInit {
   title = 'MSAL - Angular 9 Sample App';
   isIframe = false;
   loggedIn = false;
+  subscription:Subscription;
 
   constructor(private broadcastService: BroadcastService, private authService: MsalService) { }
 
@@ -21,6 +23,10 @@ export class AppComponent implements OnInit {
 
     this.broadcastService.subscribe('msal:loginSuccess', () => {
       this.checkoutAccount();
+    });
+
+    this.subscription = this.broadcastService.subscribe("msal:msal:acquireTokenFailure", (payload) => {
+      console.log(payload)
     });
 
     this.authService.handleRedirectCallback((authError, response) => {
@@ -38,6 +44,13 @@ export class AppComponent implements OnInit {
       correlationId: CryptoUtils.createNewGuid(),
       piiLoggingEnabled: false
     }));
+  }
+
+  ngOnDestroy() {
+    this.broadcastService.getMSALSubject().next(1);
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   checkoutAccount() {

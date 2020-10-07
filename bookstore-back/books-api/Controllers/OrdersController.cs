@@ -9,30 +9,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace books_api.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly BookStore store;
+        private readonly OrdersStore store;
 
-        private Guid UserId => Guid.Parse(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
-        public OrdersController(BookStore store)
+        public OrdersController(OrdersStore store)
         {
             this.store = store;
         }
 
         [HttpGet]
-        [Authorize]
         [Route("")]
         public IActionResult GetOrders()
         {
-            if (!store.Orders.ContainsKey(UserId)) return Ok(Enumerable.Empty<Book>());
-
-            var orderedBookIds = store.Orders.Single(o => o.Key == UserId).Value;
-            var orderedBooks = store.Books.Where(b => orderedBookIds.Contains(b.Id));
-
-            return Ok(orderedBooks);
+            return Ok(store.Orders);
         }
     }
 }

@@ -9,8 +9,7 @@ export const environment = {
   tenantId: '8d170773-bbea-43f1-bd6d-f414a75c2390',
   uiClienId: 'edf0921f-f0ed-49fd-af74-f5ac8971725b',
   authority: 'https://login.microsoftonline.com/common/',
-  redirectUrl: 'http://localhost:4200',
-  tokenWhiteListedDomains: ['http://localhost:5000']
+  redirectUrl: 'http://localhost:4200'
 };
 
 /*

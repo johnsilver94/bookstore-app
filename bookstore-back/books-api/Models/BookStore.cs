@@ -15,10 +15,5 @@ namespace books_api.Models
             new Book{ Id = 4, Author = "Carlo Collodi", Title = "The Adventures of Pinocchio", Price = 6.42M }
         };
 
-        public Dictionary<Guid, int[]> Orders => new Dictionary<Guid, int[]>
-        {
-            { Guid.Parse("e2371dc9-a849-4f3c-9004-df8fc921c13a"), new int[] { 1,3} },
-            { Guid.Parse("7b0a1ec1-80f5-46b5-a108-fb938d3e26c0"), new int[] { 2,3,4} }
-        };
     }
 }
