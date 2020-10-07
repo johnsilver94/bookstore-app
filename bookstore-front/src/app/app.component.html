@@ -1,0 +1,12 @@
+<div>
+
+  <!-- Navigation -->
+  <div class="topnav">
+    <a [routerLink]="['']" routerLinkActive='active' [routerLinkActiveOptions]="{ exact: true }">Bookstore</a>
+    <a [routerLink]="['/orders']" routerLinkActive='active' [routerLinkActiveOptions]="{ exact: true}" *ngIf='loggedIn'>Orders</a>
+    <button mat-raised-button *ngIf="loggedIn" (click)="getUser()">User</button>
+    <button mat-raised-button *ngIf="!loggedIn" (click)="login()">Login</button>
+    <button mat-raised-button *ngIf="loggedIn" (click)="logout()">Logout</button>
+  </div>
+  <router-outlet></router-outlet>
+</div>
